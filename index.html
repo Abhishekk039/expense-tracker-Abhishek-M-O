@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Tracker — Manage your money with clarity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Ambient Luxury Lighting -->
+<div class="ambient-glow ambient-glow-1" aria-hidden="true"></div>
+<div class="ambient-glow ambient-glow-2" aria-hidden="true"></div>
+<div class="ambient-glow ambient-glow-3" aria-hidden="true"></div>
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<!-- Sidebar Navigation -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M4 15L9.5 9.5L13.5 13.5L20 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14.5 7H20V12.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1>Expense Tracker</h1>
+        <p class="tagline">Manage your money with clarity.</p>
+      </div>
+    </div>
+
+    <nav class="app-nav" aria-label="Primary navigation">
+      <a class="nav-item is-active" href="#overview">
+        <span class="nav-icon" aria-hidden="true">▥</span>
+        <span>Overview</span>
+      </a>
+      <a class="nav-item" href="#transactions">
+        <span class="nav-icon" aria-hidden="true">▤</span>
+        <span>Transactions</span>
+        <span class="nav-pill" id="nav-tx-badge">0</span>
+      </a>
+      <a class="nav-item" href="#monthly-summary">
+        <span class="nav-icon" aria-hidden="true">▣</span>
+        <span>Monthly Summary</span>
+      </a>
+      <a class="nav-item" href="#categories">
+        <span class="nav-icon" aria-hidden="true">◔</span>
+        <span>Categories</span>
+      </a>
+    </nav>
+
+    <!-- Monthly Budget Goal Card -->
+    <div class="budget-mini-card">
+      <div class="budget-mini-header">
+        <span class="budget-mini-title">Monthly Budget</span>
+        <span class="budget-mini-pct" id="budget-pct">68%</span>
+      </div>
+      <div class="budget-progress-track">
+        <div class="budget-progress-bar" id="budget-progress-bar" style="width: 68%;"></div>
+      </div>
+      <span class="budget-mini-sub" id="budget-status-text">₹34,200 of ₹50,000 used</span>
+    </div>
+
+    <!-- Original Decorative Sidebar Note with Animated Orbs -->
+    <div class="sidebar-note">
+      <div class="note-orb note-orb-one"></div>
+      <div class="note-orb note-orb-two"></div>
+      <div class="note-shine" aria-hidden="true"></div>
+      <h2>Track<br>Manage<br>Grow</h2>
+      <p>Take control of your finances, one transaction at a time.</p>
+    </div>
+  </div>
+</header>
+
+<!-- Main Dashboard Area -->
+<main class="app-main">
+
+  <!-- Topbar with Search & Actions -->
+  <div class="topbar">
+    <div class="search-box">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <input type="search" id="search-input" placeholder="Search transactions, categories, notes..." aria-label="Search transactions and categories">
+      <span id="search-clear" class="search-clear" hidden title="Clear search">✕</span>
+    </div>
+
+    <div class="topbar-actions">
+      <!-- Quick CSV Export Button -->
+      <button type="button" class="btn-action-icon" id="export-btn" title="Export transactions as CSV" aria-label="Export CSV">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+
+      <!-- Month Selector Pill -->
+      <label class="month-pill" for="month-select" title="Change active month">
+        <span class="month-pill-icon" aria-hidden="true">▣</span>
+        <span class="month-pill-label" id="month-pill-label">September 2026</span>
+        <span class="month-pill-chevron" aria-hidden="true">⌄</span>
+      </label>
+      <input type="month" id="month-select" class="month-picker-hidden" aria-label="Select month">
+
+      <!-- Profile Avatar with Online Ring -->
+      <div class="profile-wrapper">
+        <div class="profile-badge" aria-label="Profile" title="Personal Account">A</div>
+        <span class="profile-status-dot" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Dashboard -->
+  <section class="summary-grid" id="overview" aria-label="Financial summary">
+    <div class="summary-card summary-income">
+      <div class="summary-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M12 5L6 11M12 5L18 11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="summary-body">
+        <div class="summary-header-row">
+          <span class="summary-label">Total Income</span>
+          <span class="stat-pill stat-pill-income">↑ Inflow</span>
+        </div>
+        <span class="summary-value" id="total-income">₹0</span>
+      </div>
+    </div>
+
+    <div class="summary-card summary-expense">
+      <div class="summary-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M12 19L6 13M12 19L18 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="summary-body">
+        <div class="summary-header-row">
+          <span class="summary-label">Total Expenses</span>
+          <span class="stat-pill stat-pill-expense">↓ Outflow</span>
+        </div>
+        <span class="summary-value" id="total-expense">₹0</span>
+      </div>
+    </div>
+
+    <div class="summary-card summary-balance">
+      <div class="summary-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" stroke-width="2.2"/><path d="M3 10H21" stroke="currentColor" stroke-width="2.2"/><circle cx="16.5" cy="14.5" r="1.2" fill="currentColor"/></svg>
+      </div>
+      <div class="summary-body">
+        <div class="summary-header-row">
+          <span class="summary-label">Current Balance</span>
+          <span class="stat-pill stat-pill-balance" id="balance-pill">● Healthy</span>
+        </div>
+        <span class="summary-value" id="total-balance">₹0</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content Grid: Form (Ergonomic, Spacious, Aesthetic) + History -->
+  <div class="content-grid">
+
+    <!-- Add / Edit Transaction Form -->
+    <section class="card form-card" aria-label="Add transaction">
+      <div class="card-header">
+        <div>
+          <h2 id="form-heading">Add Transaction</h2>
+          <p class="card-subtitle">Fast & clear financial entry</p>
+        </div>
+        <span class="form-badge" id="form-badge">Quick Entry</span>
+      </div>
+
+      <form id="transaction-form" novalidate>
+
+        <!-- Transaction Type Switcher -->
+        <div class="field-group">
+          <span class="field-label">Transaction Type</span>
+          <div class="type-toggle" role="radiogroup" aria-label="Transaction type">
+            <input type="radio" id="type-expense" name="type" value="expense" checked>
+            <label for="type-expense" class="toggle-option toggle-expense">
+              <span class="toggle-dot" aria-hidden="true"></span>
+              Expense
+            </label>
+            <input type="radio" id="type-income" name="type" value="income">
+            <label for="type-income" class="toggle-option toggle-income">
+              <span class="toggle-dot" aria-hidden="true"></span>
+              Income
+            </label>
+          </div>
+        </div>
+
+        <!-- Amount Input with Quick Preset Chips -->
+        <div class="field-group">
+          <div class="amount-label-row">
+            <label for="amount">Amount</label>
+            <span class="amount-helper">Enter numbers or pick preset</span>
+          </div>
+          <div class="input-prefix">
+            <span aria-hidden="true">₹</span>
+            <input type="number" id="amount" name="amount" placeholder="0.00" min="0" step="any" inputmode="decimal">
+          </div>
+          <span class="field-error" id="error-amount" role="alert"></span>
+
+          <!-- Aesthetic Quick Amount Buttons -->
+          <div class="quick-amounts" aria-label="Quick amount presets">
+            <button type="button" class="amount-chip" data-amt="100">+₹100</button>
+            <button type="button" class="amount-chip" data-amt="500">+₹500</button>
+            <button type="button" class="amount-chip" data-amt="1000">+₹1k</button>
+            <button type="button" class="amount-chip" data-amt="2500">+₹2.5k</button>
+            <button type="button" class="amount-chip" data-amt="5000">+₹5k</button>
+          </div>
+        </div>
+
+        <!-- Category & Date Row -->
+        <div class="field-row">
+          <div class="field-group">
+            <label for="category">Category</label>
+            <div class="select-wrapper">
+              <select id="category" name="category">
+                <option value="" disabled selected>Select category</option>
+              </select>
+              <span class="select-chevron" aria-hidden="true">⌄</span>
+            </div>
+            <span class="field-error" id="error-category" role="alert"></span>
+          </div>
+
+          <div class="field-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date">
+            <span class="field-error" id="error-date" role="alert"></span>
+          </div>
+        </div>
+
+        <!-- Quick Category Chips -->
+        <div class="quick-categories" id="quick-categories" aria-label="Quick category suggestions">
+          <!-- Populated dynamically via script.js -->
+        </div>
+
+        <!-- Description Input -->
+        <div class="field-group">
+          <label for="description">Description <span class="optional-tag">(Optional)</span></label>
+          <input type="text" id="description" name="description" placeholder="e.g. Lunch with friends, groceries..." maxlength="120">
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            <span class="btn-icon" aria-hidden="true">+</span>
+            <span class="btn-text">Add Transaction</span>
+          </button>
+          <button type="button" class="btn btn-ghost" id="cancel-edit-btn" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Transaction History (Spacious & Refined) -->
+    <section class="card history-card" id="transactions" aria-label="Transaction history">
+      <div class="history-header">
+        <div class="history-title-wrap">
+          <h2>Transaction History</h2>
+          <span class="count-pill" id="transaction-counter">0 records</span>
+        </div>
+
+        <div class="filters">
+          <select id="filter-type" aria-label="Filter by type">
+            <option value="all">All Types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+
+          <select id="filter-category" aria-label="Filter by category">
+            <option value="all">All Categories</option>
+          </select>
+
+          <select id="sort-by" aria-label="Sort transactions">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="highest">Highest Amount</option>
+            <option value="lowest">Lowest Amount</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="transaction-list" class="transaction-list" role="list"></div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state" hidden>
+        <div class="empty-icon" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10H21" stroke="currentColor" stroke-width="1.6"/><path d="M8 4V7M16 4V7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <h3>No transactions yet</h3>
+        <p>Start tracking your finances by adding your first income or expense.</p>
+        <button type="button" class="btn btn-primary" id="empty-add-btn">
+          <span aria-hidden="true">+</span> Add First Transaction
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Bottom Analytics Row (Monthly Summary + Category chart) -->
+  <div class="analytics-row">
+
+    <!-- Monthly Summary -->
+    <section class="card monthly-card" id="monthly-summary" aria-label="Monthly summary">
+      <div class="monthly-header">
+        <div>
+          <h2>Monthly Summary</h2>
+          <p class="card-subtitle">12-month expense activity and net savings breakdown</p>
+        </div>
+        <div class="chart-legend" aria-hidden="true">
+          <span class="legend-item"><span class="legend-dot legend-purple"></span> Expense</span>
+          <span class="legend-item"><span class="legend-dot legend-coral"></span> Core Spent</span>
+        </div>
+      </div>
+
+      <div class="analytics-view" id="monthly-view">
+        <div class="monthly-visual">
+          <div class="chart-axis">
+            <span id="axis-max">₹0</span>
+            <span id="axis-high">₹0</span>
+            <span id="axis-low">₹0</span>
+            <span>₹0</span>
+          </div>
+          <div class="monthly-bars" id="monthly-bars" aria-label="Monthly expense bars">
+            <!-- Populated dynamically via script.js with interactive tooltips -->
+          </div>
+          <div class="month-labels">
+            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+            <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-view daily-view" id="daily-view" hidden>
+        <div class="daily-detail" id="daily-detail" aria-live="polite">
+        <div class="daily-detail-header">
+          <div>
+            <strong id="daily-detail-title">Daily activity</strong>
+            <span id="daily-detail-subtitle">Tap a month bar to inspect each day.</span>
+          </div>
+          <div class="daily-detail-actions">
+            <div class="daily-detail-key">
+              <span><i class="daily-key-expense"></i>Expense</span>
+              <span><i class="daily-key-budget"></i>Daily budget</span>
+            </div>
+            <button type="button" class="chart-back-btn" id="chart-back-btn">← Back to months</button>
+          </div>
+        </div>
+        <div class="daily-chart" id="daily-chart"></div>
+        <div class="daily-tooltip" id="daily-tooltip" role="status" hidden></div>
+        </div>
+      </div>
+
+      <div class="monthly-grid">
+        <div class="monthly-item">
+          <span class="monthly-label">Monthly Income</span>
+          <span class="monthly-value income-text" id="monthly-income">₹0</span>
+        </div>
+        <div class="monthly-item">
+          <span class="monthly-label">Monthly Expense</span>
+          <span class="monthly-value expense-text" id="monthly-expense">₹0</span>
+        </div>
+        <div class="monthly-item">
+          <span class="monthly-label">Net Savings</span>
+          <span class="monthly-value" id="monthly-balance">₹0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category chart -->
+    <section class="card chart-card" id="categories" aria-label="Category-wise expenses">
+      <div class="chart-header">
+        <div>
+          <h2>Category Breakdown</h2>
+          <p class="card-subtitle">Expense distribution by category</p>
+        </div>
+        <span class="chart-header-tag">Live Breakdown</span>
+      </div>
+      <div id="chart-container" class="chart-container">
+        <p class="chart-empty" id="chart-empty">Add expenses to see a category breakdown.</p>
+      </div>
+    </section>
+
+  </div>
+
+</main>
+
+<!-- Delete confirmation modal -->
+<div class="modal-overlay" id="modal-overlay" hidden>
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+    <div class="modal-icon-badge" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <h3 id="modal-title">Delete Transaction?</h3>
+    <p id="modal-desc">Are you sure you want to delete this transaction? This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="modal-cancel">Keep Transaction</button>
+      <button type="button" class="btn btn-danger" id="modal-confirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
