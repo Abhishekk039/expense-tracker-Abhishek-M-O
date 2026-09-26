@@ -4,6 +4,11 @@ Expense Tracker is a responsive personal finance dashboard for recording income 
 
 The application runs entirely in the browser, so transactions are stored locally using `localStorage` and remain available when the user returns to the page. No backend or account setup is required.
 
+
+Project Picture:
+![Expense Tracker Screenshot](https://github.com/Abhishekk039/expense-tracker-Abhishek-M-O/blob/main/Screenshot%202026-09-26%20041311.png)
+
+Project Link : https://expense-tracker-abhishek-m-o.vercel.app/
 ## Features
 
 * Dashboard overview with total income, total expenses, and current balance
